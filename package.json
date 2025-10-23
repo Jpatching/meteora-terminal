@@ -1,0 +1,42 @@
+{
+  "name": "meteora-terminal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI for Meteora DLMM",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.19.0",
+  "engines": {
+    "node": ">=20.10"
+  },
+  "scripts": {
+    "dev": "tsx src/cli/index.ts",
+    "start": "tsx src/cli/index.ts",
+    "lint": "eslint .",
+    "format": "prettier -w ."
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@meteora-ag/dlmm": "^1.6.1",
+    "@solana/spl-token": "^0.4.14",
+    "@solana/web3.js": "^1.98.4",
+    "bn.js": "^5.2.2",
+    "bullmq": "^5.61.0",
+    "commander": "^14.0.1",
+    "discord.js": "^14.23.2",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.6",
+    "ioredis": "^5.8.2",
+    "pg": "^8.16.3",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.2.0",
+    "@types/node": "^24.9.1",
+    "bs58": "^6.0.0",
+    "eslint": "^9.38.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,6 @@
+ignoredBuiltDependencies:
+  - bigint-buffer
+  - bufferutil
+  - esbuild
+  - msgpackr-extract
+  - utf-8-validate
