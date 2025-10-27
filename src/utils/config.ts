@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import "dotenv/config";
 
 function req(name: string): string {
   const v = process.env[name];
@@ -7,7 +7,7 @@ function req(name: string): string {
 }
 
 export const CONFIG = {
-  SOLANA_RPC: process.env.SOLANA_RPC ?? '', //optional
-  TELEGRAM_BOT_TOKEN: req('TELEGRAM_BOT_TOKEN'),
-  TELEGRAM_CHAT_ID: req('TELEGRAM_CHAT_ID'),
+  SOLANA_RPC: process.env.SOLANA_RPC ?? "", //optional
+  TELEGRAM_BOT_TOKEN: req("TELEGRAM_BOT_TOKEN"),
+  TELEGRAM_CHAT_ID: req("TELEGRAM_CHAT_ID"),
 };

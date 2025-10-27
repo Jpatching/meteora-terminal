@@ -1,6 +1,6 @@
 // src/cli/commands/discover.ts
 import { Command } from "commander";
-import { discoverPools, type PoolInfo } from '../../core/dlmm';
+import { discoverPools } from "../../core/dlmm";
 
 export function registerDiscoverCommand(program: Command) {
   program
@@ -13,7 +13,7 @@ export function registerDiscoverCommand(program: Command) {
       const rows = await discoverPools(
         Number(opts.limit),
         Number(opts.minTvl ?? opts["min-tvl"]),
-        Number(opts.minApr ?? opts["min-apr"])
+        Number(opts.minApr ?? opts["min-apr"]),
       );
 
       console.table(
@@ -23,8 +23,7 @@ export function registerDiscoverCommand(program: Command) {
           apr24h: r.apr24h,
           feeTier: r.feeTier,
           binStep: r.binStep,
-        }))
+        })),
       );
     });
 }
-

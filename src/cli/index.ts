@@ -1,27 +1,30 @@
-#!/usr/bin/env tsx
-import 'dotenv/config';
-import { Command } from 'commander';
-import { discoverPools, type PoolInfo } from '../core/dlmm';
-import { sendAlert } from '../alerts/telegram';
-import { setTimeout as delay } from 'node:timers/promises';
-import { registerLpCommand } from './commands/lp-manage';
-
+import "dotenv/config";
+import { Command } from "commander";
+import { discoverPools, type PoolInfo } from "../core/dlmm";
+import { sendAlert } from "../alerts/telegram";
+import { setTimeout as delay } from "node:timers/promises";
+import { registerLpCommand } from "./commands/lp-manage";
+import { registerDiscoverCommand } from "./commands/discover";
 
 const program = new Command();
-registerLpCommand(program);
+registerDiscoverCommand(program);
 
+// ── 1. PROGRAM METADATA (MUST COME FIRST) ────────────────────────
 program
-  .name('meteora-terminal')
-  .description('CLI for Meteora liquidity management')
-  .version('0.1.0');
+  .name("meteora-terminal")
+  .description("CLI for Meteora liquidity management")
+  .version("0.2.0"); // Updated version per milestone v0.2.0
 
-// ── WATCH COMMAND ───────────────────────────────────────────────
+// ── 2. COMMAND REGISTRATION ──────────────────────────────────────
+registerLpCommand(program); // Registers 'lp open', 'lp claim', etc.
+
+// ── WATCH COMMAND ─────────────────────────────── ────────────────
 program
-  .command('watch')
-  .description('Continuously watch for new pools')
-  .option('--interval <sec>', 'seconds between refreshes', (v) => Number(v), 30)
-  .option('--min-tvl <usd>', 'Min TVL (USD)', (v) => Number(v), 0)
-  .option('--min-apr <pct>', 'Min APR %', (v) => Number(v), 0)
+  .command("watch")
+  .description("Continuously watch for new pools")
+  .option("--interval <sec>", "seconds between refreshes", (v) => Number(v), 30)
+  .option("--min-tvl <usd>", "Min TVL (USD)", (v) => Number(v), 0)
+  .option("--min-apr <pct>", "Min APR %", (v) => Number(v), 0)
   .action(async (opts) => {
     while (true) {
       console.clear();
@@ -34,7 +37,7 @@ program
           apr: `${p.apr24h.toFixed(2)}%`,
           fee: p.feeTier,
           bin: p.binStep,
-        }))
+        })),
       );
       await delay(opts.interval * 1000);
     }
@@ -42,16 +45,16 @@ program
 
 // ── DISCOVER COMMAND ────────────────────────────────────────────
 program
-  .command('discover')
-  .description('List active DLMM pools (default)')
-  .option('--limit <n>', 'Max rows', (v) => Number(v), 50)
-  .option('--min-tvl <usd>', 'Min TVL (USD)', (v) => Number(v), 0)
-  .option('--min-apr <pct>', 'Min APR % filter', (v) => Number(v), 0)
-  .option('--sort <key>', 'sort by apr|tvl', 'apr')
-  .option('--order <dir>', 'asc|desc', 'desc')
-  .option('--json', 'Output as JSON', false)
-  .option('--token <symbol>', 'Filter by token name (e.g., SOL or USDC)')
-  .option('--active-only', 'Only show pools with TVL > 0')
+  .command("discover")
+  .description("List active DLMM pools (default)")
+  .option("--limit <n>", "Max rows", (v) => Number(v), 50)
+  .option("--min-tvl <usd>", "Min TVL (USD)", (v) => Number(v), 0)
+  .option("--min-apr <pct>", "Min APR % filter", (v) => Number(v), 0)
+  .option("--sort <key>", "sort by apr|tvl", "apr")
+  .option("--order <dir>", "asc|desc", "desc")
+  .option("--json", "Output as JSON", false)
+  .option("--token <symbol>", "Filter by token name (e.g., SOL or USDC)")
+  .option("--active-only", "Only show pools with TVL > 0")
   .action(async (opts) => {
     const pools = await discoverPools(opts.limit, opts.minTvl, opts.minApr);
 
@@ -59,7 +62,7 @@ program
     let filtered = pools;
     if (opts.token)
       filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(opts.token.toLowerCase())
+        p.name.toLowerCase().includes(opts.token.toLowerCase()),
       );
     if (opts.activeOnly)
       filtered = filtered.filter((p) => p.tvlUsd && p.tvlUsd > 0);
@@ -69,8 +72,8 @@ program
       filtered = filtered.filter((p) => (p.apr24h || 0) >= opts.minApr);
 
     // ── Sorting ─────────────────────────────────────────────────
-    const key = opts.sort?.toLowerCase() === 'apr' ? 'apr24h' : 'tvlUsd';
-    const desc = (opts.order?.toLowerCase?.() || 'desc') === 'desc';
+    const key = opts.sort?.toLowerCase() === "apr" ? "apr24h" : "tvlUsd";
+    const desc = (opts.order?.toLowerCase?.() || "desc") === "desc";
     filtered.sort((a, b) => {
       const av = a[key] ?? 0,
         bv = b[key] ?? 0;
@@ -86,30 +89,29 @@ program
     console.table(
       filtered.map((p) => ({
         name: p.name,
-        tvl: p.tvlUsd ? `$${Math.round(p.tvlUsd).toLocaleString()}` : '-',
-        apr: Number.isFinite(p.apr24h) ? `${p.apr24h.toFixed(2)}%` : '-',
+        tvl: p.tvlUsd ? `$${Math.round(p.tvlUsd).toLocaleString()}` : "-",
+        apr: Number.isFinite(p.apr24h) ? `${p.apr24h.toFixed(2)}%` : "-",
         fee: p.feeTier,
         bin: p.binStep,
-      }))
+      })),
     );
     console.log(`\nSource: RocketScan DLMM • ${new Date().toISOString()}`);
   });
 
 // ── ALERT COMMAND ───────────────────────────────────────────────
 program
-  .command('alert')
-  .argument('<message...>', 'message to send')
-  .description('Send a Telegram alert')
+  .command("alert")
+  .argument("<message...>", "message to send")
+  .description("Send a Telegram alert")
   .action(async (message: string[]) => {
     try {
-      await sendAlert(message.join(' '));
-      console.log('Alert sent');
+      await sendAlert(message.join(" "));
+      console.log("Alert sent");
     } catch (e) {
       console.error(e);
       process.exit(1);
     }
   });
 
-// ── PARSE ARGS ─────────────────────────────────────────────────
+// ── 3. PARSE ARGS (MUST COME LAST) ────────────────────────────────
 program.parseAsync(process.argv);
-

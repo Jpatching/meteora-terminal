@@ -2,8 +2,6 @@
 node_modules/
 dist/
 build/
-.env
-.env.*
 *.log
 
 # Editor / OS junk
@@ -15,3 +13,5 @@ build/
 # TypeScript cache
 *.tsbuildinfo
 
+.aider*
+.env

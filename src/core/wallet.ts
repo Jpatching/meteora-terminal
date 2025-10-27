@@ -1,4 +1,3 @@
-
 // src/core/wallet.ts
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
@@ -17,7 +16,6 @@ export function loadKeypair(): Keypair {
     return Keypair.fromSecretKey(Uint8Array.from(raw));
   }
   throw new Error(
-    "Set WALLET_PRIVATE_KEY (base58 secret) or WALLET_KEYPAIR_PATH (keypair.json)."
+    "Set WALLET_PRIVATE_KEY (base58 secret) or WALLET_KEYPAIR_PATH (keypair.json).",
   );
 }
-
